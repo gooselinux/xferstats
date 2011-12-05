@@ -1,0 +1,98 @@
+--- xferstats-2.16.dist/display.c	Tue Oct 31 14:13:04 2000
++++ xferstats-2.16/display.c	Tue May 27 15:21:01 2003
+@@ -602,10 +602,10 @@
+ 				pointers->high_date);
+ 		    }
+ 		  fprintf(html, "<TABLE BORDER=2><TR><TH></TH><TH>Number Of"
+-			  "</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
++			  "</TH><TH>Completed</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
+ 			  "Of</TH><TH>Percent Of</TH></TR>\n");
+ 		  fprintf(html, "<TR><TH>Top Level Domain</TH><TH>Files Sent"
+-			  "</TH><TH>Bytes Sent</TH><TH>Xmit Rate</TH><TH>Files"
++			  "</TH><TH>Transfers</TH><TH>Bytes Sent</TH><TH>Xmit Rate</TH><TH>Files"
+ 			  " Sent</TH><TH>Bytes Sent</TH></TR>\n");
+ 		  break;
+ 		case T_HOST:
+@@ -623,9 +623,9 @@
+ 				pointers->high_date);
+ 		    }
+ 		  fprintf(html, "<TABLE BORDER=2><TR><TH></TH><TH>Number Of"
+-			  "</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
++			  "</TH><TH>Completed</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
+ 			  "Of</TH><TH>Percent Of</TH></TR>\n");
+-		  fprintf(html, "<TR><TH>Host</TH><TH>Files Sent</TH><TH>Bytes"
++		  fprintf(html, "<TR><TH>Host</TH><TH>Files Sent</TH><TH>Transfers</TH><TH>Bytes"
+ 			  " Sent</TH><TH>Xmit Rate</TH><TH>Files Sent</TH><TH>"
+ 			  "Bytes Sent</TH></TR>\n");
+ 		  break;
+@@ -644,9 +644,9 @@
+ 				pointers->high_date);
+ 		    }
+ 		  fprintf(html, "<TABLE BORDER=2><TR><TH></TH><TH>Number Of"
+-			  "</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
++			  "</TH><TH>Completed</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
+ 			  "Of</TH><TH>Percent Of</TH></TR>\n");
+-		  fprintf(html, "<TR><TH>Domain</TH><TH>Files Sent</TH><TH>"
++		  fprintf(html, "<TR><TH>Domain</TH><TH>Files Sent</TH><TH>Transfers</TH><TH>"
+ 			  "Bytes Sent</TH><TH>Xmit Rate</TH><TH>Files Sent"
+ 			  "</TH><TH>Bytes Sent</TH></TR>\n");
+ 		  break;
+@@ -655,9 +655,9 @@
+ 			  "%s</I> to <I>%s</I></H1></U><BR>\n",
+ 			  pointers->low_date, pointers->high_date);
+ 		  fprintf(html, "<TABLE BORDER=2><TR><TH></TH><TH>Number Of"
+-			  "</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
++			  "</TH><TH>Completed</TH><TH>Number of</TH><TH>Average</TH><TH>Percent "
+ 			  "Of</TH><TH>Percent Of</TH></TR>\n");
+-		  fprintf(html, "<TR><TH>Size</TH><TH>Files Sent</TH><TH>"
++		  fprintf(html, "<TR><TH>Size</TH><TH>Files Sent</TH><TH>Transfers</TH><TH>"
+ 			  "Bytes Sent</TH><TH>Xmit Rate</TH><TH>Files Sent"
+ 			  "</TH><TH>Bytes Sent</TH></TR>\n");
+ 		  break;
+--- xferstats-2.16.dist/display.c	Tue Oct 31 14:13:04 2000
++++ xferstats-2.16/display.c	Tue May 27 18:24:41 2003
+@@ -275,7 +275,7 @@
+ 	  /* skip all of the entries before the last 'n' dictated by
+ 	   * number_daily_stats */
+ 	  if (pointers->config->number_daily_stats)
+-		  count = num_days - pointers->config->number_daily_stats + 1;
++		  count = num_days - pointers->config->number_daily_stats;
+ 	  if (count < 0) count = 0;
+   }
+ 
+@@ -284,16 +284,12 @@
+       displayed_count++;
+ 
+       if (pointers->config->number_daily_stats &&
+-	  displayed_count >= pointers->config->number_daily_stats)
++	  displayed_count > pointers->config->number_daily_stats)
+ 	break;
+ 
+-      if (displayed_count == 1 || !pointers->config->number_daily_stats ||
+-	  pointers->config->number_daily_stats > num_days ||
+-	  displayed_count > num_days - pointers->config->number_daily_stats)
+-	{
+ 	  if (displayed_count == 1 ||
+ 	      (pointers->config->max_report_size &&
+-	       !(displayed_count % (pointers->config->max_report_size + 1))))
++	       !((displayed_count - 1) % pointers->config->max_report_size)))
+ 	    {
+ 	      /* print our headers */
+ 	      if (pointers->config->html_output)
+@@ -350,7 +346,6 @@
+ 		  printf("---------------  ----------  -----------  ---------  ----------  ----------\n");
+ 		}
+ 	    }
+-	}
+ 
+       if (pointers->config->html_output)
+ 	{
+@@ -488,7 +483,7 @@
+       
+       if (count == 1 ||
+ 	  (pointers->config->max_report_size &&
+-	   !(count % (pointers->config->max_report_size + 1))))
++	   !((count - 1) % pointers->config->max_report_size)))
+ 	{
+ 	  if (pointers->config->html_output)
+ 	    {

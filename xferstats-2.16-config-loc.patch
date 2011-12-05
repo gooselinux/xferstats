@@ -1,0 +1,11 @@
+--- xferstats-2.16/xferstats.h.orig	Mon Apr 23 09:46:05 2001
++++ xferstats-2.16/xferstats.h	Mon Apr 23 09:46:32 2001
+@@ -57,7 +57,7 @@
+ 
+ /* Also self-explanitory.  The default place to look for the xferstats config
+  * information */
+-#define DEFAULT_CONFIG "/usr/local/etc/xferstats.cfg"
++#define DEFAULT_CONFIG "/etc/xferstats.cfg"
+ 
+ /* The default xferlog filename */
+ #define FILENAME "/var/log/xferlog"
